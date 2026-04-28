@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>notepad</title>
+</head>
+<style type="text/css">
+ol,ul{
+display:block;
+list-style-type:none;
+margin:3px;
+}
+</style><body>
+<div>import React, { useState } from 'react';<br>
+import { Search, Plus, ChefHat, ArrowLeft, BookHeart, Utensils, X, CookingPot, Clock, Users } from 'lucide-react';<br>
+<br>
+// Data awal resep nusantara<br>
+const initialRecipes = [<br>
+&nbsp; {<br>
+&nbsp;&nbsp;&nbsp; id: 1,<br>
+&nbsp;&nbsp;&nbsp; title: "Opor Ayam Kuning Spesial",<br>
+&nbsp;&nbsp;&nbsp; description: "Sajian wajib saat perayaan, gurihnya santan berpadu dengan rempah khas nusantara.",<br>
+&nbsp;&nbsp;&nbsp; ingredients: ["Ayam", "Santan", "Bawang Merah", "Bawang Putih", "Kunyit", "Ketumbar", "Kemiri", "Serai", "Daun Jeruk"],<br>
+&nbsp;&nbsp;&nbsp; instructions: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Cuci bersih ayam, lumuri dengan sedikit garam dan perasan jeruk nipis.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Haluskan bawang merah, bawang putih, kunyit, ketumbar, dan kemiri.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tumis bumbu halus bersama serai dan daun jeruk hingga harum dan matang.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masukkan ayam, aduk hingga berubah warna.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tuangkan santan cair, masak dengan api sedang hingga ayam empuk.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tambahkan santan kental, garam, dan gula. Masak sambil terus diaduk agar santan tidak pecah.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Sajikan dengan taburan bawang goreng."<br>
+&nbsp;&nbsp;&nbsp; ],<br>
+&nbsp;&nbsp;&nbsp; time: "60 Menit",<br>
+&nbsp;&nbsp;&nbsp; portions: "4 Porsi",<br>
+&nbsp;&nbsp;&nbsp; image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&amp;fit=crop&amp;w=800&amp;q=80",<br>
+&nbsp;&nbsp;&nbsp; color: "bg-orange-100"<br>
+&nbsp; },<br>
+&nbsp; {<br>
+&nbsp;&nbsp;&nbsp; id: 2,<br>
+&nbsp;&nbsp;&nbsp; title: "Nasi Goreng Kampung",<br>
+&nbsp;&nbsp;&nbsp; description: "Nasi goreng sederhana dengan bumbu terasi yang nikmat dan menggugah selera.",<br>
+&nbsp;&nbsp;&nbsp; ingredients: ["Nasi", "Bawang Merah", "Bawang Putih", "Terasi", "Cabai Rawit", "Kecap Manis", "Telur", "Kerupuk"],<br>
+&nbsp;&nbsp;&nbsp; instructions: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Haluskan bawang merah, bawang putih, cabai rawit, dan terasi yang sudah dibakar.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Panaskan sedikit minyak, buat telur orak-arik, lalu sisihkan di pinggir wajan.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tumis bumbu halus hingga harum.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masukkan nasi putih (sebaiknya nasi sisa semalam), aduk rata dengan bumbu dan telur.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tambahkan kecap manis dan sedikit garam. Aduk cepat dengan api besar hingga aroma wangi keluar.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Angkat dan sajikan bersama kerupuk dan acar."<br>
+&nbsp;&nbsp;&nbsp; ],<br>
+&nbsp;&nbsp;&nbsp; time: "15 Menit",<br>
+&nbsp;&nbsp;&nbsp; portions: "2 Porsi",<br>
+&nbsp;&nbsp;&nbsp; image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&amp;fit=crop&amp;w=800&amp;q=80",<br>
+&nbsp;&nbsp;&nbsp; color: "bg-red-100"<br>
+&nbsp; },<br>
+&nbsp; {<br>
+&nbsp;&nbsp;&nbsp; id: 3,<br>
+&nbsp;&nbsp;&nbsp; title: "Sayur Lodeh Sunda",<br>
+&nbsp;&nbsp;&nbsp; description: "Sayur berkuah santan ringan dengan isian sayuran yang berlimpah, sangat pas dinikmati dengan ikan asin.",<br>
+&nbsp;&nbsp;&nbsp; ingredients: ["Labu Siam", "Kacang Panjang", "Jagung Manis", "Terong", "Daun Melinjo", "Santan", "Bawang Merah", "Bawang Putih", "Lengkuas", "Daun Salam"],<br>
+&nbsp;&nbsp;&nbsp; instructions: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Potong semua sayuran sesuai selera.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Iris tipis bawang merah dan bawang putih. Memarkan lengkuas.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Rebus air, masukkan bawang merah, bawang putih, lengkuas, dan daun salam. Tunggu hingga mendidih.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masukkan jagung dan labu siam terlebih dahulu, masak hingga setengah empuk.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tambahkan kacang panjang, terong, dan daun melinjo.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tuangkan santan, tambahkan garam dan sedikit gula pasir. Aduk perlahan.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masak hingga sayuran matang sempurna namun tidak terlalu lembek."<br>
+&nbsp;&nbsp;&nbsp; ],<br>
+&nbsp;&nbsp;&nbsp; time: "30 Menit",<br>
+&nbsp;&nbsp;&nbsp; portions: "5 Porsi",<br>
+&nbsp;&nbsp;&nbsp; image: "https://images.unsplash.com/photo-1548943487-a2e4d43b4850?auto=format&amp;fit=crop&amp;w=800&amp;q=80",<br>
+&nbsp;&nbsp;&nbsp; color: "bg-green-100"<br>
+&nbsp; },<br>
+&nbsp; {<br>
+&nbsp;&nbsp;&nbsp; id: 4,<br>
+&nbsp;&nbsp;&nbsp; title: "Sambal Goreng Kentang Ati",<br>
+&nbsp;&nbsp;&nbsp; description: "Menu pendamping wajib dengan perpaduan rasa pedas, manis, dan gurih.",<br>
+&nbsp;&nbsp;&nbsp; ingredients: ["Kentang", "Ati Ampela", "Cabai Merah", "Bawang Merah", "Bawang Putih", "Daun Salam", "Santan"],<br>
+&nbsp;&nbsp;&nbsp; instructions: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Potong kentang dadu, lalu goreng hingga matang. Sisihkan.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Rebus ati ampela, potong dadu, lalu goreng sebentar.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Haluskan cabai merah, bawang merah, dan bawang putih.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Tumis bumbu halus dan daun salam hingga matang dan mengeluarkan minyak.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masukkan sedikit santan kental, aduk rata.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Masukkan kentang dan ati ampela. Tambahkan garam dan gula merah. Aduk hingga bumbu meresap dan mengering.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Sajikan hangat."<br>
+&nbsp;&nbsp;&nbsp; ],<br>
+&nbsp;&nbsp;&nbsp; time: "45 Menit",<br>
+&nbsp;&nbsp;&nbsp; portions: "4 Porsi",<br>
+&nbsp;&nbsp;&nbsp; image: "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&amp;fit=crop&amp;w=800&amp;q=80",<br>
+&nbsp;&nbsp;&nbsp; color: "bg-orange-100"<br>
+&nbsp; }<br>
+];<br>
+<br>
+export default function App() {<br>
+&nbsp; const [recipes, setRecipes] = useState(initialRecipes);<br>
+&nbsp; const [currentView, setCurrentView] = useState('home'); // 'home', 'add', 'detail'<br>
+&nbsp; const [activeRecipe, setActiveRecipe] = useState(null);<br>
+&nbsp; <br>
+&nbsp; // State untuk pencarian bahan<br>
+&nbsp; const [searchInput, setSearchInput] = useState('');<br>
+&nbsp; const [searchIngredients, setSearchIngredients] = useState([]);<br>
+<br>
+&nbsp; // Form state<br>
+&nbsp; const [newRecipe, setNewRecipe] = useState({<br>
+&nbsp;&nbsp;&nbsp; title: '',<br>
+&nbsp;&nbsp;&nbsp; description: '',<br>
+&nbsp;&nbsp;&nbsp; ingredientsStr: '',<br>
+&nbsp;&nbsp;&nbsp; instructionsStr: '',<br>
+&nbsp;&nbsp;&nbsp; time: '',<br>
+&nbsp;&nbsp;&nbsp; portions: '',<br>
+&nbsp; });<br>
+<br>
+&nbsp; // Fungsi untuk menambah bahan ke pencarian<br>
+&nbsp; const addSearchIngredient = (e) =&gt; {<br>
+&nbsp;&nbsp;&nbsp; if (e.key === 'Enter' &amp;&amp; searchInput.trim() !== '') {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.preventDefault();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!searchIngredients.includes(searchInput.trim().toLowerCase())) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setSearchIngredients([...searchIngredients, searchInput.trim().toLowerCase()]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setSearchInput('');<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp; };<br>
+<br>
+&nbsp; const removeSearchIngredient = (ingToRemove) =&gt; {<br>
+&nbsp;&nbsp;&nbsp; setSearchIngredients(searchIngredients.filter(ing =&gt; ing !== ingToRemove));<br>
+&nbsp; };<br>
+<br>
+&nbsp; // Filter resep berdasarkan bahan yang dicari<br>
+&nbsp; const filteredRecipes = recipes.filter(recipe =&gt; {<br>
+&nbsp;&nbsp;&nbsp; if (searchIngredients.length === 0) return true;<br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; // Mengecek apakah resep mengandung SEMUA bahan yang dicari pengguna (bisa diubah menjadi salah satu dengan .some)<br>
+&nbsp;&nbsp;&nbsp; return searchIngredients.every(searchIng =&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recipe.ingredients.some(recipeIng =&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recipeIng.toLowerCase().includes(searchIng)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br>
+&nbsp;&nbsp;&nbsp; );<br>
+&nbsp; });<br>
+<br>
+&nbsp; // Handle Form Submit<br>
+&nbsp; const handleAddRecipe = (e) =&gt; {<br>
+&nbsp;&nbsp;&nbsp; e.preventDefault();<br>
+&nbsp;&nbsp;&nbsp; const newId = recipes.length ? Math.max(...recipes.map(r =&gt; r.id)) + 1 : 1;<br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; const ingredientsArray = newRecipe.ingredientsStr.split(',').map(item =&gt; item.trim()).filter(item =&gt; item !== '');<br>
+&nbsp;&nbsp;&nbsp; const instructionsArray = newRecipe.instructionsStr.split('\n').map(item =&gt; item.trim()).filter(item =&gt; item !== '');<br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; const pastelColors = ['bg-rose-100', 'bg-teal-100', 'bg-amber-100', 'bg-blue-100', 'bg-fuchsia-100', 'bg-emerald-100'];<br>
+&nbsp;&nbsp;&nbsp; const randomColor = pastelColors[Math.floor(Math.random() * pastelColors.length)];<br>
+<br>
+&nbsp;&nbsp;&nbsp; const recipeObj = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id: newId,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; title: newRecipe.title,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; description: newRecipe.description,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ingredients: ingredientsArray,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; instructions: instructionsArray,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; time: newRecipe.time || '-',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portions: newRecipe.portions || '-',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; image: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&amp;fit=crop&amp;w=800&amp;q=80", // Placeholder default image<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; color: randomColor<br>
+&nbsp;&nbsp;&nbsp; };<br>
+<br>
+&nbsp;&nbsp;&nbsp; setRecipes([recipeObj, ...recipes]);<br>
+&nbsp;&nbsp;&nbsp; setCurrentView('home');<br>
+&nbsp;&nbsp;&nbsp; setNewRecipe({ title: '', description: '', ingredientsStr: '', instructionsStr: '', time: '', portions: '' });<br>
+&nbsp; };<br>
+<br>
+&nbsp; // --- VIEWS ---<br>
+<br>
+&nbsp; const renderHome = () =&gt; (<br>
+&nbsp;&nbsp;&nbsp; &lt;div className="animate-in fade-in slide-in-from-bottom-4 duration-500"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Header / Hero */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="bg-gradient-to-br from-teal-100 via-emerald-50 to-green-100 rounded-3xl p-8 mb-8 shadow-sm border border-teal-200 text-center relative overflow-hidden"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="absolute top-0 right-0 p-4 opacity-10"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;CookingPot size={120} /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h2 className="text-3xl font-bold text-teal-900 mb-3 relative z-10 font-serif"&gt;Punya bahan apa di kulkas?&lt;/h2&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;p className="text-teal-700 mb-6 max-w-lg mx-auto relative z-10"&gt;Ketik bahan makanan yang Anda miliki, tekan Enter, dan kami akan mencarikan resep masakan Nusantara yang pas untuk Anda.&lt;/p&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Search Bar */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="relative max-w-2xl mx-auto z-10"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;Search className="h-5 w-5 text-teal-600" /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type="text"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="w-full pl-12 pr-4 py-4 rounded-full bg-white border-2 border-teal-200 focus:outline-none focus:border-teal-400 focus:ring-4 focus:ring-teal-100 transition-all text-stone-700 shadow-sm"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; placeholder="Ketik bahan (contoh: Ayam, Santan) lalu tekan Enter..."<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value={searchInput}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onChange={(e) =&gt; setSearchInput(e.target.value)}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onKeyDown={addSearchIngredient}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Selected Ingredients Tags */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {searchIngredients.length &gt; 0 &amp;&amp; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="flex flex-wrap justify-center gap-2 mt-4 z-10 relative"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {searchIngredients.map(ing =&gt; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span key={ing} className="bg-white border-2 border-teal-300 text-teal-800 px-4 py-1.5 rounded-full text-sm font-medium flex items-center shadow-sm"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {ing}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;button onClick={() =&gt; removeSearchIngredient(ing)} className="ml-2 hover:bg-teal-100 rounded-full p-0.5 transition-colors"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;X size={14} /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/button&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ))}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;button <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onClick={() =&gt; setSearchIngredients([])}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="text-sm text-teal-600 underline hover:text-teal-800 ml-2"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hapus Semua<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/button&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Recipe Grid */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="mb-6 flex justify-between items-end"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h3 className="text-2xl font-bold text-stone-800 font-serif"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {searchIngredients.length &gt; 0 ? 'Resep yang Cocok' : 'Eksplorasi Resep Nusantara'}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/h3&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="text-stone-500 font-medium"&gt;{filteredRecipes.length} Resep&lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {filteredRecipes.length === 0 ? (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="text-center py-16 bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;Utensils className="mx-auto h-12 w-12 text-stone-300 mb-4" /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h4 className="text-lg font-semibold text-stone-700 mb-2"&gt;Belum ada resep yang pas&lt;/h4&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;p className="text-stone-500"&gt;Coba kurangi bahan yang dicari atau tambahkan resep baru dengan bahan tersebut.&lt;/p&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) : (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {filteredRecipes.map(recipe =&gt; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; key={recipe.id} <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onClick={() =&gt; { setActiveRecipe(recipe); setCurrentView('detail'); }}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="group cursor-pointer bg-white rounded-3xl overflow-hidden border-2 border-stone-100 hover:border-pink-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className={`h-48 ${recipe.color} relative overflow-hidden`}&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;img <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; src={recipe.image} <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alt={recipe.title} <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 mix-blend-multiply"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-stone-700 flex items-center shadow-sm"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;Clock size={12} className="mr-1" /&gt; {recipe.time}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="p-6"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h4 className="text-xl font-bold text-stone-800 mb-2 font-serif group-hover:text-pink-600 transition-colors"&gt;{recipe.title}&lt;/h4&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;p className="text-stone-500 text-sm line-clamp-2 mb-4 leading-relaxed"&gt;{recipe.description}&lt;/p&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="flex flex-wrap gap-1.5"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {recipe.ingredients.slice(0, 3).map((ing, idx) =&gt; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span key={idx} className="bg-stone-100 text-stone-600 text-xs px-2.5 py-1 rounded-md font-medium"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {ing}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ))}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {recipe.ingredients.length &gt; 3 &amp;&amp; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="bg-stone-100 text-stone-400 text-xs px-2.5 py-1 rounded-md font-medium"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +{recipe.ingredients.length - 3} lagi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ))}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )}<br>
+&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp; );<br>
+<br>
+&nbsp; const renderDetail = () =&gt; {<br>
+&nbsp;&nbsp;&nbsp; if (!activeRecipe) return null;<br>
+&nbsp;&nbsp;&nbsp; return (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="animate-in fade-in slide-in-from-right-8 duration-300 max-w-4xl mx-auto"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;button <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; onClick={() =&gt; setCurrentView('home')}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="flex items-center text-stone-500 hover:text-pink-600 mb-6 transition-colors font-medium"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ArrowLeft size={18} className="mr-2" /&gt; Kembali ke Daftar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/button&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-stone-100"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className={`h-64 sm:h-80 md:h-96 ${activeRecipe.color} relative`}&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;img <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; src={activeRecipe.image} <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alt={activeRecipe.title} <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; className="w-full h-full object-cover mix-blend-multiply"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"&gt;&lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="absolute bottom-0 left-0 p-8 w-full text-white"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h2 className="text-3xl md:text-5xl font-bold font-serif mb-3 shadow-sm"&gt;{activeRecipe.title}&lt;/h2&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="flex items-center space-x-6 text-sm md:text-base font-medium opacity-90"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="flex items-center"&gt;&lt;Clock size={18} className="mr-2" /&gt; {activeRecipe.time}&lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="flex items-center"&gt;&lt;Users size={18} className="mr-2" /&gt; {activeRecipe.portions}&lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="p-8"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;p className="text-lg text-stone-600 mb-8 leading-relaxed italic border-l-4 border-pink-300 pl-4 bg-pink-50/50 py-3 rounded-r-lg"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "{activeRecipe.description}"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/p&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="grid grid-cols-1 md:grid-cols-3 gap-10"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Bahan-bahan */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="md:col-span-1"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="bg-orange-50 rounded-2xl p-6 border border-orange-100"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h3 className="text-xl font-bold text-orange-900 mb-4 font-serif flex items-center"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;BookHeart className="mr-2 h-5 w-5" /&gt; Bahan-bahan<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/h3&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ul className="space-y-3"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {activeRecipe.ingredients.map((ing, idx) =&gt; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;li key={idx} className="flex items-start"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="h-2 w-2 mt-2 rounded-full bg-orange-400 mr-3 flex-shrink-0"&gt;&lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="text-stone-700"&gt;{ing}&lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/li&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ))}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/ul&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {/* Cara Membuat */}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="md:col-span-2"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;h3 className="text-2xl font-bold text-stone-800 mb-6 font-serif flex items-center"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ChefHat className="mr-2 h-6 w-6 text-pink-500" /&gt; Cara Membuat<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/h3&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="space-y-6"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {activeRecipe.instructions.map((step, idx) =&gt; (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div key={idx} className="flex"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;div className="flex-shrink-0 mr-4"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;span className="flex items-center justify-center w-8 h-8 rounded-full bg-pink-100 text-pink-600 font-bold text-sm"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {idx + 1}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/span&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;p className="text-stone-700 leading-relaxed pt-1"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {step}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/p&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ))}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>
+</body>
+</html>
